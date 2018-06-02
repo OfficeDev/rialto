@@ -3,11 +3,11 @@ Rialto improves the experience of using Microsoft Teams for conferences by showi
 
 ## Why?
 
-Some internal Microsoft conferences (WHiPS, O3) have adopted a format where a "side channel" of live chat activity is projected to screens to the sides of the main presentation content. This allows the audience to engage by posting questions, comments, snarky observations, semi-on-topic humor, etc.
+Some internal Microsoft conferences (WHiPS, O3) have adopted a format where a "side channel" of live chat activity is projected on screens to the sides of the main presentation content. This allows the audience to engage by posting questions, comments, snarky observations, semi-on-topic humor, etc.
 
 In the past, the chat view would simply be a raw feed, updating whenever anything was posted. This proved to be a little too distracting and led to a low signal-to-noise ratio (especially when people got carried away with animated GIFs...). Also, once we switched from a custom chat solution to Microsoft Teams, its tendency to evict  newer threads from view when a reply to an older thread is posted led to a very jumpy and hard-to-follow live view experience.
 
-Rialto solves this by showing a semi-moderated view of chat activity that is easy to read in a conference setting.
+Rialto solves this by showing a semi-moderated view of chat activity that is easy to read in a conference setting. See `public/howto.html` for more detail.
 
 ## How?
 
