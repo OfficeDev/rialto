@@ -1,0 +1,166 @@
+.background {
+    background-color: rgb(243, 242, 241)
+}
+.heading {
+    font-family:'Franklin Gothic Medium';
+    font-size: 20pt;
+    color: black;
+}
+.content {
+    font-family:'Segoe UI';
+    font-size: 12pt;
+    color: rgb(50, 50, 50);
+}
+.agendaItemBreak {
+    display: block;
+    border-style: solid;
+    color: rgb(226, 226, 226);
+}
+#agendaItemTable {
+    padding: 10px;
+    border: black;
+    width: 100%;
+}
+#agendaItemTitle {
+    font-family:'Franklin Gothic Medium';
+    font-size: 42pt;
+}
+#agendaItemSpeaker {
+    font-family:'Franklin Gothic Medium';
+    font-size: 24pt;
+    color: rgb(120, 120, 120);
+    vertical-align: top;
+}
+#agendaItemMeta {
+    font-family:'Franklin Gothic Medium';
+    font-size: 24pt;
+    text-align: right;
+}
+.agendaItemHashtag {
+    color: rgb(216, 62,39);
+}
+.agendaItemNav {
+    cursor: pointer;
+    user-select: none;
+}
+.agendaItemNav:hover {
+    text-decoration: underline;
+}
+.agendaSegment {
+    font-family:'Franklin Gothic Medium';
+    font-size: 20pt;
+    color: rgb(50, 50, 50);
+}
+.mainPresentationActivity {
+    background-color: white;
+}
+.independentActivity {
+    background-color: rgb(184, 204, 228);
+}
+.groupActivity {
+    background-color: rgb(216, 228, 188);
+}
+.microsActivity {
+    background-color: rgb(228, 223, 236);
+}
+.microsActivitySubSegment {
+    font-size: 16pt;
+    background-color: rgb(228, 223, 236);
+}
+#autoRefreshStatus {
+    font-family: 'Franklin Gothic Light';
+    font-size: 14pt;
+}
+#pinnedLabel {
+    font-family:'Franklin Gothic Medium';
+    font-size: 24pt;
+    color: rgb(50, 50, 50);
+    padding-left: 20px;
+}
+#questionLabel {
+    font-family:'Franklin Gothic Medium';
+    font-size: 24pt;
+    color: rgb(216, 62,39);
+    padding-left: 20px;
+}
+#commentLabel {
+    font-family:'Franklin Gothic Medium';
+    font-size: 24pt;
+    color: gray;
+    padding-left: 20px;
+}
+.comment {
+    border-radius: 20px;
+    background: white;
+    padding: 15px;
+}
+.commentUser {
+    font-family:'Segoe UI';
+    font-size: 14pt;
+    font-weight: bold;
+    color: black;
+}
+.commentText {
+    font-family:'Segoe UI';
+    font-size: 24pt;
+    color: rgb(50, 50, 50);
+}
+.commentReplyCountImage {
+    padding: 5px;
+    width: 30px;
+    vertical-align:-9px
+}
+.commentReplyUsersImage {
+    padding: 5px;
+    width: 30px;
+    vertical-align:-11px
+}
+.commentReplyStats {
+    font-family:'Segoe UI';
+    font-size: 18pt;
+    font-weight: bold;
+    color: rgb(50, 50, 50);
+}
+.time {
+    font-family:'Segoe UI';
+    font-size: 14pt;
+    color: rgb(100, 100, 100);
+}
+.answer {
+    border-radius: 20px;
+    background: white;
+    padding: 15px;
+}
+.answerText {
+    font-family:'Segoe UI';
+    font-size: 18pt;
+    color: rgb(50, 50, 50);
+}
+.answerMeta {
+    font-family:'Segoe UI';
+    font-size: 10pt;
+    color: rgb(100, 100, 100);
+}
+#howto {
+    font-family:'Franklin Gothic Medium';
+    font-size: 24pt;
+    color: rgb(150, 150, 150);;
+}
+#topNav {
+    font-family:'Franklin Gothic Medium';
+    font-size: 14pt;
+    color: rgb(150, 150, 150);
+}
+#topNav div {
+    float: left;
+}
+.conversationHeader {
+    font-family: 'Segoe UI';
+    font-size: 16pt;
+    color: black;
+}
+.reply {
+    font-family: 'Segoe UI';
+    font-size: 10pt;
+    color: rgb(50, 50, 50);
+}

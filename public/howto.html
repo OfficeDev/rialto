@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>How to use the O3 chat system</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <link rel="stylesheet" type="text/css"href="style.css">
+    </head>
+    <body class='background'>
+        <table id='agendaItemTable'>
+            <tr>
+                <td rowspan='2' style='width:120px'><img src='images/o3logo.png' width='100px' height='100px'></td>
+                <td colspan='2' id='agendaItemTitle'>How to use the O3 chat system</td>
+            </tr>
+        </table>
+        <hr class='agendaItemBreak'>
+        <div style='margin: 0 auto; width:90%'>
+            <p class='heading'>
+                What is the deal with the "chat crawl"?
+            </p>
+            <p class='content'>
+                We encourage group discussion of the content being presented, to spark new ideas and help the group as a whole get smarter and better-connected.
+                In the conference room, chat activity on our channel is displayed on screens to either side of the main stage.<br><br>
+                You can go to our <a href='https://teams.microsoft.com/l/channel/19%3a155ac376afb44004b9aeaea47baab834%40thread.skype/General?groupId=dff3bbdd-3582-4043-afde-30679472601f&tenantId=72f988bf-86f1-41af-91ab-2d7cd011db47'>O3 2013 Team Channel</a> to participate in the discussion.<br><br>
+                The system is a continued evolution of the live chat stream that originated at the WHiPS conference and was later adopted by O3.
+                It is intended to be a fun way for the audience to participate that (hopefully) does not excessively distract the room's attention
+                and remains respectful of the current speaker on stage.
+            </p>
+
+            <p class='heading'>
+                How does it do that?
+            </p>
+            <p class='content'>
+                We have a new system this year. It shows a "curated" view of the live chat stream instead of a raw feed:
+            </p>
+            <ul class='content'>
+                <li>Only top-level posts are shown (not full reply threads).</li>
+                <li>Posts that ask a question are shown above other posts.</li>
+                <li>Posts are ranked by "engagement", currently measured by the number of unique people replying.</li>
+                <li>Replies in comment threads can be marked as an "answer", causing it to show up on the live stream.</li>
+                <li>Text-only (no GIFs).</li>
+            </ul>
+            <p class='content'>
+                This works via a Teams bot that listens to all channel activity. It can also accept <b>commands</b> added to the end of replies:
+            </p>
+            <ul class='content'>
+                <li><img src='images/check.png' width='20px' style='vertical-align:-3px'>&nbsp;Mark your reply as the answer the original post with <b>/answer</b></li>
+                <li><img src='images/pin.png' width='20px' style='vertical-align:-3px'>&nbsp;Pin post to the top with <b>/pin</b> (undo with <b>/unpin</b>)</li>
+                <li>Hide post with <b>/hide</b> (undo with <b>/unhide</b>)</li>
+            </ul>
+            <p class='content'>
+                Last writer wins. Be civil :)
+            </p>
+
+            <p class='heading'>
+                Can I just "like" a post to increase its engagement score?
+            </p>
+            <p class='content'>
+                Unfortunately, due to technical limitations, the O3 bot won't get notifications of likes. You "upvote" a post by adding a reply, which could just be "+1". Only the number of unique people replying, not the total number of replies, determines the engagement score for ranking.
+            </p>
+
+            <p class='heading'>
+                Can I edit a post after it's appeared on the big screen?
+            </p>
+            <p class='content'>
+                Similar to "likes", Teams does not send edit notifications to bots, so it will not know about your edit. You can use the <b>/hide</b> command in a reply to remove any post from the screen if necessary.
+                Or use <b>/answer</b> to add a clarification.
+            </p>
+
+            <p class='heading'>
+                What does adding a #hashtag to a post do?
+            </p>
+            <p class='content'>
+                Each presentation at O3 has its own hashtag. If you want to associate your post with a presentation <i>that is not currently happening live on stage</i>, add its hashtag.
+                There is no need to add a hashtag if your post is about the current presentation, it will be associated automatically.<br><br>
+                You can use the #offtopic hashtag for comments not associated with anything on the agenda.<br><br>
+                Each presentation has a permalink (keyed via its hashtag) that allows you to pull up the comments for that talk (i.e. reconstruct the live view that was in the room at the time).<br><br>
+                All hashtags are listed in the O3 agenda. Note: if you add multiple hashtags, your post will only be associated with the first one (see exception about #TellMeMore below).
+            </p>
+
+            <p class='heading'>
+                What is special about the #TellMeMore hashtag?
+            </p>
+            <p class='content'>
+                Near the end of the conference, we will have a panel discussion that we'll organize "just in time" based on what we think the audience would be interested in learning more about,
+                and we'll bring a few speakers from earlier in the conference back up on stage.<br><br>
+                To help inform whom we select, you can tag any post (including replies) with the special #TellMeMore hashtag (lowercase is fine too).
+                This hashtag can be combined with regular speaker hashtags and the right thing will happen.
+            </p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <link rel="stylesheet" type="text/css"href="style.css">
+    </head>
+    <body class='background'>
+        <table id='agendaItemTable'>
+            <tr>
+                <td rowspan='2' style='width:120px'><img src='images/o3logo.png' width='100px' height='100px'></td>
+                <td colspan='2' id='agendaItemTitle'>Loading...</td>
+            </tr>
+        </table>
+        <hr class='agendaItemBreak'>
+        <table id='conversations' id='agendaSegmentTable' width='95%' align='center' cellspacing=0px>
+        </table>
+        <script>
+            const getUrlParam = (name) => {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results == null) {
+                    return null;
+                } else {
+                    return decodeURI(results[1]);
+                }
+            };
+
+            const createConversationRows = (query, conversation) => {
+                let html = `
+                    <tr><td></td></tr>
+                    <tr class='conversationHeader'>
+                        <td colspan=2>
+                            <b>#${conversation.hashtag}/${conversation.user}</b>: ${conversation.text}
+                        </td>
+                    </tr>
+                `;
+                conversation.replies.sort((a,b) => Date.parse(a.time).valueOf() - Date.parse(b.time).valueOf());
+                conversation.replies.forEach(reply => {
+                    let style = (query != '' && (reply.user.toLowerCase().includes(query) || reply.text.toLowerCase().includes(query))) ? 'color:red' : ''; 
+                    html += `
+                    <tr class='reply'>
+                        <td style='width:20px'></td>
+                        <td style='${style}'>
+                            <b>${reply.user}</b>: ${reply.text}
+                        </td>
+                    </tr>
+                    `;
+                });
+                return html;
+            }
+
+            let query = (getUrlParam('q') || '').toLowerCase();
+            $.get(`api/search/${query}`, (conversations) => {
+                if (conversations.length == 0) {
+                    $('#agendaItemTitle').text(`No results for ${query}`);
+                } else {
+                    query = query.replace('%23', '#'); // Decode encoded hashtags for display purposes
+                    $('#agendaItemTitle').text(query.length > 0 ? `Results for ${query}` : 'All Results');
+                    conversations.sort((a,b) => Date.parse(a.time).valueOf() - Date.parse(b.time).valueOf()); 
+                    conversations.forEach(conversation => {
+                        $('#conversations').append(createConversationRows(query, conversation));
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

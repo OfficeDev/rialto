@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" type="text/css"href="style.css">
+    </head>
+    <body class='background'>
+        <div id='autoRefreshStatus' style='display:none; position:absolute; top:0px; width:100%'>
+            <div style='width:600px; margin:0 auto; text-align:center; background-color: red; color: white; padding: 5px; z-index:-1'>Auto-refresh disabled, please manually refresh</div>
+        </div>
+        <div id='topNav' style='width:100%'>
+            <div id='prevAgendaItem' style='text-align:left; width:50%'>
+                <span id='prevAgendaItemTitle' class='agendaItemNav' onclick='navPrev()'></span>&nbsp;<span id='prevAgendaItemHashtag'></span>
+            </div>
+            <div id='nextAgendaItem' style='text-align:right; width:50%'>
+                <span id='nextAgendaItemHashtag'></span>&nbsp;<span id='nextAgendaItemTitle' class='agendaItemNav' onclick='navNext()'></span>
+            </div>
+        </div>
+        <table id='agendaItemTable'>
+            <tr>
+                <td rowspan='2' style='width:120px'><img src='images/o3logo.png' width='100px' height='100px'></td>
+                <td colspan='2' id='agendaItemTitle'>Loading...</td>
+            </tr>
+            <tr>
+                <td id='agendaItemSpeaker'></td>
+                <td id='agendaItemMeta'>
+                    <a id='agendaItemMoreInfo'></a>&nbsp;
+                    <span id='agendaItemHashtag' class='agendaItemHashtag'></span>
+                </td>
+            </tr>
+        </table>
+        <hr class='agendaItemBreak'>
+        <table id='pinnedTable' width='95%' align='center'></table>
+        <table id='questionTable' width='95%' align='center'></table>
+        <table id='commentTable' width='95%' align='center'></table>
+        <div id='howto' style='display:none; position:absolute; left:0px; width:100%; padding-top:100px; text-align:center; font-family: Segoe UI'>
+            <p>New chat posts will automatically appear here</p>
+            <p>Use #hashtags to tag other agenda items in posts</p>
+            You can append bot commands in thread replies:
+            <div style='text-align: center; font-size:18pt'>
+                <div style='margin: 0 auto; width:800px'>
+                    <img src='images/check.png' width='20px' style='vertical-align:-3px'>&nbsp;Mark your comment as the answer with <b>/answer</b><br>
+                    <img src='images/pin.png' width='20px' style='vertical-align:-3px'>&nbsp;Pin thread to the top with <b>/pin</b> (undo with <b>/unpin</b>)<br>
+                    Hide thread with <b>/hide</b> (undo with <b>/unhide</b>)<br>
+                    Add commands at the end of your reply; last writer wins
+                </div>
+            </div>
+            <p>For more info, see <a href='https://aka.ms/o3chat'>https://aka.ms/o3chat</a></p>
+        </div>
+        <script>
+            const computeConversationScore = (conversation) => {
+                // The score is the number of unique other people (not including original author) replying
+                if (conversation.replyUsers) {
+                    conversation.replyUsers = JSON.parse(conversation.replyUsers);
+                    let deduction = conversation.replyUsers.includes(conversation.user) ? 1 : 0; // Don't count self-replies
+                    conversation.score = conversation.replyUsers.length - deduction;
+                } else {
+                    conversation.score = 0;
+                }
+            }
+
+            const getIntUrlParam = (name) => {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results == null) {
+                    return null;
+                } else {
+                    return parseInt(decodeURI(results[1]));
+                }
+            };
+
+            const getAgoString = (date) => {
+                const oneMinute = 60;
+                const fiveMinutes = oneMinute * 5;
+                const oneHour = oneMinute * 60;
+                const twoHours = oneHour * 2;
+                const oneDay = oneHour * 24;
+                const twoDays = oneDay * 2;
+                let ago = (new Date().valueOf() - date.valueOf())/1000;
+                if (ago < oneMinute) {
+                    return 'a few seconds';
+                }
+                if (ago < fiveMinutes) {
+                    return 'a few minutes';
+                }
+                if (ago < oneHour) {
+                    return `${Math.floor(ago/oneMinute)} minutes`;
+                }
+                if (ago < twoHours) {
+                    return 'an hour';
+                }
+                if (ago < oneDay) {
+                    return `${Math.floor(ago/oneHour)} hours`;
+                }
+                if (ago < twoDays) {
+                    return 'a day';
+                }
+                return `${Math.floor(ago/oneDay)} days`;
+            }
+
+            const setVisibility = (selector, isVisible) => {
+                $(selector).css('visibility', isVisible ? 'visible' : 'hidden');
+            }
+
+            const setDisplay = (selector, isDisplayed) => {
+                $(selector).css('display', isDisplayed ? 'inherit' : 'none');
+            }
+
+            const shortString = (s, maxLen) => {
+                if (!s || s.length < maxLen) {
+                    return s;
+                }
+                return s.substring(0, maxLen - 3) + '...';
+            }
+
+            const animateNewMessage = (seenMessageIds, messageId) => {
+                if (!seenMessageIds.has(messageId)) {
+                    $(`#${messageId}`).css('background-color', 'pink');
+                    $(`#${messageId}`).animate({
+                        backgroundColor: 'white'
+                    }, 1000);
+                    seenMessageIds.add(messageId);
+                }
+            }
+
+            const getAnswerId = (conversation) => {
+                return `${conversation.id}-${conversation.replyTime}`;
+            }
+
+            const getSeenMessageIdsForAgendaItem = (agendaItemId, conversations) => {
+                let seenMessageIds = g_seenMessageIdsByAgendaItemId.get(agendaItemId);
+                if (!seenMessageIds) {
+                    seenMessageIds = new Set();
+
+                    // Prepopulate to avoid the new message animation on everything
+                    // when navigating to an agenda item
+                    conversations.forEach(x => {
+                        seenMessageIds.add(x.id);
+                        if (x.answerText) {
+                            seenMessageIds.add(getAnswerId(x));
+                        }
+                    });
+
+                    g_seenMessageIdsByAgendaItemId.set(agendaItemId, seenMessageIds);
+                }
+                return seenMessageIds;
+            }
+
+            const refreshPageAgendaItem = (agendaItem) => {
+                g_agendaItem = agendaItem;
+                g_hasRetrievedAgendaItemAtLeastOnce = true;
+
+                if (agendaItem.prev && agendaItem.prev.title != '') {
+                    $('#prevAgendaItemTitle').html(`(prev)&nbsp;${shortString(agendaItem.prev.title, 50)}`);
+                    $('#prevAgendaItemHashtag').text(agendaItem.prev.hashtagActive ? `#${agendaItem.prev.id}` : '');
+                    setVisibility('#prevAgendaItem', true);
+                } else {
+                    setVisibility('#prevAgendaItem', false);
+                }
+
+                if (agendaItem.next && agendaItem.next.title != '') {
+                    $('#nextAgendaItemTitle').html(`${shortString(agendaItem.next.title, 50)}&nbsp;(next)`);
+                    $('#nextAgendaItemHashtag').text(agendaItem.next.hashtagActive ? `#${agendaItem.next.id}` : '');
+                    setVisibility('#nextAgendaItem', true);
+                } else {
+                    setVisibility('#nextAgendaItem', false);
+                }
+
+                $('#agendaItemTitle').text(agendaItem.title);
+
+                $('#agendaItemSpeaker').text(agendaItem.speaker || '');
+                setVisibility('#agendaItemSpeaker', agendaItem.speaker);
+
+                $('#agendaItemMoreInfo').text(agendaItem.moreInfo || '');
+                $('#agendaItemMoreInfo').attr('href', `https://${agendaItem.moreInfo}`);
+                $('#agendaItemHashtag').text(agendaItem.hashtagActive ? `#${agendaItem.id}` : '');
+                setVisibility('#agendaItemMeta', agendaItem.hashtagActive || agendaItem.moreInfo);
+
+                $.get(`api/conversations/${agendaItem.id}`, (conversations) => {
+                    $(`#pinnedTable`).empty();
+                    $(`#questionTable`).empty();
+                    $(`#commentTable`).empty();
+                    setDisplay('#howto', !conversations.find(x => !x.isHidden));
+                    let seenMessageIds = getSeenMessageIdsForAgendaItem(agendaItem.id, conversations);
+                    conversations.forEach(x => computeConversationScore(x));
+                    conversations.sort((a, b) => {
+                        if (b.score == a.score) {
+                            let delta = Date.parse(b.time).valueOf() - Date.parse(a.time).valueOf();
+                            return delta;
+                        } else {
+                            return b.score - a.score;
+                        }
+                    });
+                    for(let conversation of conversations) {
+                        if (conversation.isHidden) {
+                            seenMessageIds.delete(conversation.id);
+                            if (conversation.answerText) {
+                                seenMessageIds.delete(getAnswerId(conversation));
+                            }
+                            continue;
+                        }
+                        let userId = `${conversation.id}-user`;
+                        let timeId = `${conversation.id}-time`;
+                        let textId = `${conversation.id}-text`;
+                        let statsId = `${conversation.id}-stats`;
+                        let pinnedId = `${conversation.id}-pin`;
+                        let pinHtml = conversation.isPinned ? `
+                            <td id='${pinnedId}' style='width: 50px; vertical-align: top; padding-top: 15px'>
+                                <img src='images/pin.png' width='40px'>
+                            </td>` : '';
+                        let textType = conversation.isPinned ? 'pinned' : (conversation.text.includes('?') ? 'question' : 'comment');
+                        let tableLabel = textType == 'pinned' ? 'Pinned' : (textType == 'question' ? 'Questions' : 'Comments');
+                        if ($(`#${textType}Table`).children().length == 0) {
+                            $(`#${textType}Table`).append(`
+                                <tr>
+                                    <td id='${textType}Label' colspan='2'>
+                                        ${tableLabel}
+                                    </td>
+                                </tr>
+                            `);
+                        }
+                        $(`#${textType}Table`).append(`
+                            <tr>
+                                <td id='${conversation.id}' class='comment' stlye='width: 100%' colspan='2'>
+                                    <table width='100%'>
+                                        <tr>
+                                            ${pinHtml}
+                                            <td style='vertical-align: top'>
+                                                <span id='${userId}' class='commentUser'></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id='${timeId}' class='time'></span><br>
+                                                <span id='${textId}' class='commentText'></span>
+                                            </td>
+                                            <td id='${statsId}' style='width: 70px; vertical-align: top'>
+                                                <img src='images/reply.png' class='commentReplyCountImage'><span class='commentReplyStats'>${conversation.replyCount}</span><br>
+                                                <img src='images/group.png' class='commentReplyUsersImage'><span class='commentReplyStats'>${conversation.score}</span><br>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>`);
+                        $(`#${userId}`).text(conversation.user);
+                        $(`#${timeId}`).text(`${getAgoString(Date.parse(conversation.time))} ago`);
+                        $(`#${textId}`).text(conversation.text);
+                        $(`#${statsId}`).css('opacity', conversation.score == 0 ? 0.3 : 0.9);
+                        if (conversation.answerText) {
+                            let answerId = getAnswerId(conversation);
+                            let answerUserId = `${conversation.id}-answer-user`;
+                            let answerTimeId = `${conversation.id}-answer-time`;
+                            let answerTextId = `${conversation.id}-answer-text`;
+                            $(`#${textType}Table`).append(`
+                                <tr style='height:4px'></tr>
+                                <tr>
+                                    <td style='width:50px'></td>
+                                    <td id='${answerId}' class='answer'>
+                                        <table>
+                                            <tr>
+                                                <td style='width:45px; vertical-align:top; padding-top: 10px'><img src='images/check.png' width='35px'></td>
+                                                <td>
+                                                    <span id='${answerTextId}' class='answerText'></span><br>
+                                                    <span class='answerMeta'>Answered by <span id='${answerUserId}'></span> <span id='${answerTimeId}'></span> ago</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>`);
+                            $(`#${answerTextId}`).text(conversation.answerText);
+                            $(`#${answerUserId}`).text(conversation.answerUser);
+                            $(`#${answerTimeId}`).text(getAgoString(Date.parse(conversation.answerTime)));
+                            animateNewMessage(seenMessageIds, answerId);
+                        }
+                        $(`#${textType}Table`).append(`<tr style='height:12px'></tr>`);
+                        animateNewMessage(seenMessageIds, conversation.id);
+                    }
+                });
+
+                if (agendaItem.id != g_lastAgendaItemId) {
+                    g_autoRefreshExpiration = getNewAutoRefreshExpiration();
+                    g_lastAgendaItemId = agendaItem.id;
+                } else {
+                    if (Date.now() > g_autoRefreshExpiration) {
+                        setDisplay('#autoRefreshStatus', true);
+                        clearInterval(g_interval);
+                    }
+                }
+            }
+
+            const refreshPage = () => {
+                $.get(`api/agenda/${g_agendaItemId}`, refreshPageAgendaItem)
+                    .fail(() => {
+                        if (!g_hasRetrievedAgendaItemAtLeastOnce) {
+                            $('#agendaItemTitle').text(`Unknown item #${g_agendaItemId}`);
+                            clearInterval(g_interval);
+                        }
+                    });
+            }
+
+            const navPrev = () => {
+                window.location.hash = g_agendaItem.prev.id;
+            }
+
+            const navNext = () => {
+                window.location.hash = g_agendaItem.next.id;
+            }
+
+            let g_agendaItem = null;
+            let g_agendaItemId = window.location.hash.substring(1);
+            if (g_agendaItemId == '') {
+                g_agendaItemId = 'current';
+            }
+            let g_lastAgendaItemId = g_agendaItemId;
+
+            window.onhashchange = () => {
+                g_agendaItemId = window.location.hash.substring(1);
+                refreshPage();
+            }
+
+            const g_defaultAutoRefreshDurationMin = g_agendaItemId == 'current' ? 120 : 10;
+            const g_defaultAutoRefreshIntervalSec = g_agendaItemId == 'current' ? 5 : 10;
+            const g_autoRefreshDurationMs = (getIntUrlParam('duration') || g_defaultAutoRefreshDurationMin) * 60 * 1000;
+            const g_autoRefreshIntervalMs = (getIntUrlParam('interval') || g_defaultAutoRefreshIntervalSec) * 1000;
+            const getNewAutoRefreshExpiration = () => {
+                return getIntUrlParam('refresh') == 0 ? 0 : Date.now() + g_autoRefreshDurationMs;
+            }
+            let g_autoRefreshExpiration = getNewAutoRefreshExpiration();
+            let g_interval = setInterval(refreshPage, g_autoRefreshIntervalMs);
+            let g_seenMessageIdsByAgendaItemId = new Map();
+            let g_hasRetrievedAgendaItemAtLeastOnce = false;
+
+            refreshPage();
+        </script>
+    </body>
+</html>
+<!-- cellpadding='10' border=1 style='width: 100%' -->
