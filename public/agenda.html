@@ -11,7 +11,7 @@
         <table id='agendaItemTable'>
             <tr>
                 <td rowspan='2' style='width:120px'><img src='images/o3logo.png' width='100px' height='100px'></td>
-                <td colspan='2' id='agendaItemTitle'>O3 Agenda</td>
+                <td colspan='2' id='agendaItemTitle'>Agenda</td>
             </tr>
         </table>
         <hr class='agendaItemBreak'>
@@ -61,10 +61,10 @@
                 let segment = null;
                 if (getUrlParam('day') == '1') {
                     segment = 'day1main';
-                    $('#agendaItemTitle').text('O3 Agenda Day 1');
+                    $('#agendaItemTitle').text('Agenda Day 1');
                 } else  if (getUrlParam('day') == '2') {
                     segment = 'day2main'
-                    $('#agendaItemTitle').text('O3 Agenda Day 2');
+                    $('#agendaItemTitle').text('Agenda Day 2');
                 }
                 if (segment) {
                     agendaItems = agendaItems.filter(x => x.segment == segment); // Only show items associated with an agenda segment
