@@ -11,20 +11,22 @@ Rialto solves this by showing a semi-moderated view of chat activity that is eas
 
 ## How?
 
-Rialto is a Node.js application that implements a [Microsoft Teams bot](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/bots/bots-overview) to listen to chat activity, and a website to show the live view (along with some related stuff, like the conference agenda).
+Rialto is a Node.js application that implements a [Microsoft Teams bot](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/bots/bots-overview) to listen to chat activity, and hosts a website to show the live view (along with some related stuff, like the conference agenda).
 
-To use:
+### IMPORTANT NOTES
+* The bot relies on the ability to receive messages even when not explicitly @-mentioned. This functionality is limited to **internal Microsoft Teams only** and requires you to contact the Teams team to enable this for your bot.
+* Microsoft users must be aware of CELA policies regarding data storage. You are responsible for the data stored by this application.
 
-1. Set up a Teams bot using the instructions above and add it to the team you want it to listen to. You will need the bot *appId* and *password*. **IMPORTANT NOTE**: The bot relies on the ability to receive messages even when not explicitly @-mentioned.
-1. Set up Azure storage with tables named *agenda*, *conversations*, *replies*, and *metadata*. See state.js for schema details. You will need to pre-seed the *agenda* and *metadata* table with some content (using Azure Storage Explorer, for example). 
+Please contact [pbaer@microsoft.com](mailto:pbaer@microsoft.com) before deploying this for your conference.
+
+### How to Deploy
+
+1. Set up a Teams bot and add it to the team you want it to listen to. You will need the bot *appId* and *password* to proceed.
+1. Set up Azure storage with tables named *agenda*, *conversations*, *replies*, and *metadata*. See state.js for schema details. You will need to pre-seed the *agenda* and *metadata* tables with some content (using Azure Storage Explorer, for example).
 1. Deploy the application to a web site host of your choice. Azure App Services is recommended, but any Node.js host should do. You will need to make sure the following environment variables are set:
     * `APPSETTING_BOT_APP_ID`
     * `CUSTOMCONNSTR_BOT_APP_PASSWORD`
     * `CUSTOMCONNSTR_TABLE_STORAGE`
-
-**NOTE**: There is still some O3-specific branding and help text baked into the code that hasn't been factored out yet.
-
-Please contact [pbaer@microsoft.com](mailto:pbaer@microsoft.com) for help.
 
 # Contributing
 
