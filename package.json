@@ -1,0 +1,19 @@
+{
+  "name": "o3bot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.0"
+  },
+  "dependencies": {
+    "azure-storage": "^2.8.1",
+    "botbuilder": "^3.14.0",
+    "botbuilder-teams": "^0.1.7",
+    "express": "^4.16.2"
+  }
+}

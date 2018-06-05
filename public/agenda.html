@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <link rel="stylesheet" type="text/css"href="style.css">
+    </head>
+    <body class='background'>
+        <table id='agendaItemTable'>
+            <tr>
+                <td rowspan='2' style='width:120px'><img src='images/o3logo.png' width='100px' height='100px'></td>
+                <td colspan='2' id='agendaItemTitle'>Agenda</td>
+            </tr>
+        </table>
+        <hr class='agendaItemBreak'>
+        <table class='agendaSegment' id='agendaSegmentTable' width='95%' align='center' cellspacing=0px>
+            <tr><td>Start</td><td>Title</td><td>Hashtag</td><td>Speaker(s)</td></tr>
+        </table>
+        <script>
+            const getUrlParam = (name) => {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results == null) {
+                    return null;
+                } else {
+                    return decodeURI(results[1]);
+                }
+            };
+
+            const convertTo12hTime = (time) => {
+                if (!time) {
+                    return '';
+                }
+                let hoursInt = parseInt(time.substring(0, 2));
+                let minutes = time.substring(2, 4);
+                return `${hoursInt > 12 ? hoursInt - 12 : hoursInt}:${minutes}${hoursInt >= 12 ? 'pm' : 'am'}`;
+            }
+
+            const createAgendaItemSummaryRow = (agendaItem) => {
+                let activityClass = 'mainPresentationActivity';
+                if (agendaItem.activityType) {
+                    if (agendaItem.activityType == 'micros' && !agendaItem.start) {
+                        activityClass = 'microsActivitySubSegment';
+                    } else {
+                        activityClass = `${agendaItem.activityType}Activity`;
+                    }
+                }
+                let titlePaddingLeft = !agendaItem.start ? 30 : 0;
+                let row = `
+                    <tr class='${activityClass}'>
+                        <td style='padding:5px; text-align:right'>${convertTo12hTime(agendaItem.start)}</td>
+                        <td style='padding-left:${titlePaddingLeft}px'>${agendaItem.title}</td>
+                        <td>${agendaItem.hashtagActive ? '#' + agendaItem.id : ''}</td>
+                        <td>${agendaItem.speaker || ''}</td>
+                    </tr>`;
+                return row;
+            }
+
+            $.get(`api/agenda`, (agendaItems) => {
+                let segment = null;
+                if (getUrlParam('day') == '1') {
+                    segment = 'day1main';
+                    $('#agendaItemTitle').text('Agenda Day 1');
+                } else  if (getUrlParam('day') == '2') {
+                    segment = 'day2main'
+                    $('#agendaItemTitle').text('Agenda Day 2');
+                }
+                if (segment) {
+                    agendaItems = agendaItems.filter(x => x.segment == segment); // Only show items associated with an agenda segment
+                } else {
+                    agendaItems = agendaItems.filter(x => x.segment); // Show all items associated with any agenda segment
+                }
+                let showMicros = getUrlParam('micros') == '1';
+                if (showMicros) {
+                    agendaItems = agendaItems.filter(x => x.activityType == 'micros');
+                }
+                let noSubSegments = getUrlParam('nosub') == '1';
+                if (noSubSegments) {
+                    agendaItems = agendaItems.filter(x => !x.subSegment);
+                }
+                let start = parseInt(getUrlParam('start')) || 0;
+                agendaItems = agendaItems.filter(x => !x.start || parseInt(x.start) >= start);
+                for (let agendaItem of agendaItems) {
+                    $(`#agendaSegmentTable`).append(createAgendaItemSummaryRow(agendaItem));
+                }
+            });
+        </script>
+    </body>
+</html>
