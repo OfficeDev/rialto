@@ -15,7 +15,7 @@ Rialto is a Node.js application that implements a [Microsoft Teams bot](https://
 
 To use:
 
-1. Set up a Teams bot using the instructions above and add it to the team you want it to listen to. You will need the bot *appId* and *password*. **IMPORTANT NOTE**: The bot relies on the ability to receive messages even when not explicitly @-mentioned; this feature is not yet broadly available.
+1. Set up a Teams bot using the instructions above and add it to the team you want it to listen to. You will need the bot *appId* and *password*. **IMPORTANT NOTE**: The bot relies on the ability to receive messages even when not explicitly @-mentioned.
 1. Set up Azure storage with tables named *agenda*, *conversations*, *replies*, and *metadata*. See state.js for schema details. You will need to pre-seed the *agenda* and *metadata* table with some content (using Azure Storage Explorer, for example). 
 1. Deploy the application to a web site host of your choice. Azure App Services is recommended, but any Node.js host should do. You will need to make sure the following environment variables are set:
     * `APPSETTING_BOT_APP_ID`
@@ -26,6 +26,16 @@ To use:
 
 Please contact [pbaer@microsoft.com](mailto:pbaer@microsoft.com) for help.
 
-## License
+# Contributing
 
-MIT
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.microsoft.com.
+
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
