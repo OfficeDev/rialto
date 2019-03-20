@@ -1,3 +1,13 @@
+---
+topic: sample
+products:
+- Office 365
+languages:
+- JavaScript
+extensions:
+  contentType: tools
+  createdDate: 6/5/2018 11:04:30 AM
+---
 # Rialto: Make Conferences More Fun with Microsoft Teams
 Rialto improves the experience of using Microsoft Teams for conferences by showing a curated view of real-time channel chat activity that is optimized for viewing on a large screen.
 
