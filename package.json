@@ -11,9 +11,9 @@
     "npm": "5.6.0"
   },
   "dependencies": {
-    "azure-storage": "^2.8.1",
-    "botbuilder": "^3.14.0",
-    "botbuilder-teams": "^0.1.7",
+    "azure-storage": "^2.10.3",
+    "botbuilder": "^4.4.0",
+    "botbuilder-teams": "^0.2.5",
     "express": "^4.16.2"
   }
 }
