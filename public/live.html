@@ -14,22 +14,30 @@
         </div>
         <div id='topNav' style='width:100%'>
             <div id='prevAgendaItem' style='text-align:left; width:50%'>
-                <span id='prevAgendaItemTitle' class='agendaItemNav' onclick='navPrev()'></span>&nbsp;<span id='prevAgendaItemHashtag'></span>
+                <span id='prevAgendaItemTitle' class='agendaItemNav' onclick='navPrev()'></span>
             </div>
             <div id='nextAgendaItem' style='text-align:right; width:50%'>
-                <span id='nextAgendaItemHashtag'></span>&nbsp;<span id='nextAgendaItemTitle' class='agendaItemNav' onclick='navNext()'></span>
+                <span id='nextAgendaItemTitle' class='agendaItemNav' onclick='navNext()'></span>
             </div>
         </div>
         <table id='agendaItemTable'>
-            <tr>
-                <td rowspan='2' style='width:120px'><img src='images/o3logo.png' width='100px' height='100px'></td>
-                <td colspan='2' id='agendaItemTitle'>Loading...</td>
-            </tr>
-            <tr>
-                <td id='agendaItemSpeaker'></td>
-                <td id='agendaItemMeta'>
-                    <a id='agendaItemMoreInfo'></a>&nbsp;
-                    <span id='agendaItemHashtag' class='agendaItemHashtag'></span>
+            <tr style='height:130px'>
+                <td style='width:120px'>
+                    <img src='images/o3logo.png' width='100px' height='100px'>
+                    <div id='howtoLink'>aka.ms/o3chat</div>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td colspan='2' id='agendaItemTitle'>Loading...</td>
+                        </tr>
+                        <tr id='agendaItemSpeakerMeta'>
+                            <td id='agendaItemMeta'>
+                                <span id='agendaItemSpeaker'></span>&nbsp;
+                                <a id='agendaItemMoreInfo'></a>&nbsp;
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
@@ -39,7 +47,6 @@
         <table id='commentTable' width='95%' align='center'></table>
         <div id='howto' style='display:none; position:absolute; left:0px; width:100%; padding-top:100px; text-align:center; font-family: Segoe UI'>
             <p>New chat posts will automatically appear here</p>
-            <p>Use #hashtags to tag other agenda items in posts</p>
             You can append bot commands in thread replies:
             <div style='text-align: center; font-size:18pt'>
                 <div style='margin: 0 auto; width:800px'>
@@ -49,6 +56,7 @@
                     Add commands at the end of your reply; last writer wins
                 </div>
             </div>
+            <p>Use #offtopic for posts unrelated to the current agenda item</p>
             <p>For more info, see <a href='https://aka.ms/o3chat'>https://aka.ms/o3chat</a></p>
         </div>
         <script>
@@ -102,7 +110,7 @@
             }
 
             const setVisibility = (selector, isVisible) => {
-                $(selector).css('visibility', isVisible ? 'visible' : 'hidden');
+                $(selector).css('visibility', isVisible ? 'visible' : 'collapse');
             }
 
             const setDisplay = (selector, isDisplayed) => {
@@ -155,7 +163,6 @@
 
                 if (agendaItem.prev && agendaItem.prev.title != '') {
                     $('#prevAgendaItemTitle').html(`(prev)&nbsp;${shortString(agendaItem.prev.title, 50)}`);
-                    $('#prevAgendaItemHashtag').text(agendaItem.prev.hashtagActive ? `#${agendaItem.prev.id}` : '');
                     setVisibility('#prevAgendaItem', true);
                 } else {
                     setVisibility('#prevAgendaItem', false);
@@ -163,7 +170,6 @@
 
                 if (agendaItem.next && agendaItem.next.title != '') {
                     $('#nextAgendaItemTitle').html(`${shortString(agendaItem.next.title, 50)}&nbsp;(next)`);
-                    $('#nextAgendaItemHashtag').text(agendaItem.next.hashtagActive ? `#${agendaItem.next.id}` : '');
                     setVisibility('#nextAgendaItem', true);
                 } else {
                     setVisibility('#nextAgendaItem', false);
@@ -172,12 +178,11 @@
                 $('#agendaItemTitle').text(agendaItem.title);
 
                 $('#agendaItemSpeaker').text(agendaItem.speaker || '');
-                setVisibility('#agendaItemSpeaker', agendaItem.speaker);
 
                 $('#agendaItemMoreInfo').text(agendaItem.moreInfo || '');
                 $('#agendaItemMoreInfo').attr('href', `https://${agendaItem.moreInfo}`);
-                $('#agendaItemHashtag').text(agendaItem.hashtagActive ? `#${agendaItem.id}` : '');
-                setVisibility('#agendaItemMeta', agendaItem.hashtagActive || agendaItem.moreInfo);
+
+                setVisibility('#agendaItemSpeakerMeta', agendaItem.speaker || agendaItem.hashtagActive || agendaItem.moreInfo);
 
                 $.get(`api/conversations/${agendaItem.id}`, (conversations) => {
                     $(`#pinnedTable`).empty();

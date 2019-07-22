@@ -5,9 +5,9 @@ const prefix = () => {
 }
 
 module.exports.error = s => {
-    console.error(`${prefix()} ERROR: ${s}`);
+    console.error(`${prefix()} ERROR: ${s}...`);
 }
 
 module.exports.info = s => {
-    console.log(`${prefix()}  INFO: ${s}`);
+    console.log(`${prefix()}  INFO: ${s}...`);
 }

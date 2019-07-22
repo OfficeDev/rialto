@@ -51,7 +51,7 @@
                     <tr class='${activityClass}'>
                         <td style='padding:5px; text-align:right'>${convertTo12hTime(agendaItem.start)}</td>
                         <td style='padding-left:${titlePaddingLeft}px'>${agendaItem.title}</td>
-                        <td>${agendaItem.hashtagActive ? '#' + agendaItem.id : ''}</td>
+                        <td style='color: ${agendaItem.hashtagActive ? 'red' : 'black'}'>${'#' + agendaItem.id}</td>
                         <td>${agendaItem.speaker || ''}</td>
                     </tr>`;
                 return row;

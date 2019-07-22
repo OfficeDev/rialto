@@ -34,7 +34,11 @@
 #agendaItemMeta {
     font-family:'Franklin Gothic Medium';
     font-size: 24pt;
-    text-align: right;
+}
+#howtoLink {
+    font-family:'Franklin Gothic Medium';
+    font-size: 12pt;
+    color: rgb(216, 62,39);
 }
 .agendaItemHashtag {
     color: rgb(216, 62,39);
