@@ -1,0 +1,10 @@
+page_type: sample
+products:
+  - office-365
+languages:
+  - javascript
+extensions:
+  contentType: tools
+  createdDate: '6/5/2018 11:04:30 AM'
+title: Rialto
+description: Make conferences more fun with Microsoft Teams
