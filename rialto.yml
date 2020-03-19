@@ -1,0 +1,10 @@
+page_type: sample
+products:
+  - office-365
+languages:
+  - javascript
+extensions:
+  contentType: tools
+  createdDate: '6/5/2018 11:04:30 AM'
+title: Rialto
+description: Rialto is a Node.js application that implements a Microsoft Teams bot to listen to chat activity, and hosts a website to show the live view (along with some related stuff, like the conference agenda)
