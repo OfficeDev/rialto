@@ -14,6 +14,6 @@
     "azure-storage": "^2.10.3",
     "botbuilder": "^4.4.0",
     "botbuilder-teams": "^0.2.5",
-    "express": "^4.16.2"
+    "express": "^4.18.2"
   }
 }
